@@ -54,10 +54,14 @@ def call(method, path, payload=None, _base=None):
         "Accept": "application/json",
     })
     try:
-        r = urllib.request.urlopen(req, timeout=40)
+        r = urllib.request.urlopen(req, timeout=40)  # 40s = the Workato API's documented request timeout
         return r.status, r.read().decode(errors="replace")
     except urllib.error.HTTPError as e:
+        # HTTP error WITH a body (4xx/5xx) — return it so callers can inspect the API's error JSON
         return e.code, e.read().decode(errors="replace")
+    except (urllib.error.URLError, TimeoutError) as e:
+        # connection refused / DNS failure / timeout — no HTTP response to return; fail clearly
+        sys.exit("Network error reaching %s: %s" % (url, getattr(e, "reason", e)))
 
 def out(status, body, raw=False):
     if raw:
