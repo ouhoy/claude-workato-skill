@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# never publish secrets / local config
+api_token
+*.token
+.env
+.env.*

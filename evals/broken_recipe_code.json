@@ -1,0 +1,42 @@
+{
+  "number": 0,
+  "provider": "gmail",
+  "name": "new_email",
+  "as": "a1b2c3d4",
+  "keyword": "trigger",
+  "dynamicPickListSelection": { "label_ids": "INBOX" },
+  "input": { "label_ids": "INBOX" },
+  "block": [
+    {
+      "number": 1,
+      "keyword": "if",
+      "as": "e5f6a7b8",
+      "input": {
+        "type": "compound",
+        "operand": "and",
+        "conditions": [
+          { "operand": "contains", "lhs": "#{_('data.gmail.a1b2c3d4.from_email')}", "rhs": "vendor@acme.com" },
+          { "operand": "doesnt_contain", "lhs": "#{_('data.gmail.a1b2c3d4.body_plain')}", "rhs": "approved" }
+        ]
+      },
+      "block": [
+        {
+          "number": 2,
+          "provider": "gmail",
+          "name": "send_mail",
+          "as": "c9d0e1f2",
+          "keyword": "action",
+          "input": {
+            "email_type": "text",
+            "to": "ops@acme.com",
+            "subject": "PO needs approval",
+            "body": "A vendor email came in without the word 'approved' in the body."
+          },
+          "uuid": "00000000-0000-4000-8000-000000000002"
+        }
+      ],
+      "uuid": "00000000-0000-4000-8000-000000000001"
+    }
+  ],
+  "uuid": "00000000-0000-4000-8000-000000000000"
+}

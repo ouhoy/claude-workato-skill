@@ -1,0 +1,26 @@
+{
+  "skill_name": "workato",
+  "evals": [
+    {
+      "id": 0,
+      "name": "inspect-account",
+      "prompt": "Connect to my Workato account and give me a rundown: list my recipes and which ones are running, list my connections, and show the most recent job for the recipe whose name looks like 'Email Trigger'.",
+      "expected_output": "Uses the Workato Platform API (token at ~/.config/workato/api_token, US base https://www.workato.com/api, Bearer auth) to list recipes + connections and fetch the latest job via /recipes/:id/jobs. Reports running state and the job outcome. Does NOT guess endpoints or re-derive the curl scaffolding from scratch.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "build-recipe",
+      "prompt": "In my Workato account, create a recipe (leave it STOPPED) that triggers on a new Gmail email from billing@acme.com, and if the email body contains the word \"refund\" it auto-replies to billing@acme.com with \"Got your refund request\". Save the recipe code JSON you generated to code.json in your outputs folder so I can review it.",
+      "expected_output": "Creates via POST /recipes with code and config passed as JSON STRINGS and folder_id as a STRING, into a real folder (not root). Recipe: gmail new_email trigger on INBOX; an IF with a compound AND of from_email contains 'billing@acme.com' and body_plain contains 'refund', using the CORRECT operand keys and the #{_('data.gmail.<trigger_as>.<field>')} datapill format; a gmail send_mail action. Recipe left stopped (running:false). code.json saved and structurally valid.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "fix-invalid-condition",
+      "prompt": "Attached is the `code` JSON of a Workato recipe. In the editor the second IF condition won't validate — the operator on the body check didn't bind, so the step shows an error. Fix the recipe code so the condition is valid, tell me exactly what was wrong and why, and save the corrected code to fixed_code.json.",
+      "expected_output": "Diagnoses that the operand string 'doesnt_contain' is not a valid Workato condition operand key and replaces it with the correct key (the value verified during skill research), leaving the datapill references, lhs/rhs, and overall structure intact. Explains the operand-key issue. Saves fixed_code.json.",
+      "files": ["broken_recipe_code.json"]
+    }
+  ]
+}
