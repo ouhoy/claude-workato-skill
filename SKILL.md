@@ -122,6 +122,19 @@ push (Gmail → Pub/Sub). Details in recipe-gotchas.md.
   convention), the **three-tier item matching** pattern (Shopify → lookup table → stop with
   details), how to inject a test 850, and the full proven recipe with mapping formulas.
   *Read this for any Orderful/EDI-inbound recipe or Shopify draft-order action.*
+- **references/connector-sdk.md** — the boundary case: a task needs a **connector** built or
+  changed (not a recipe). This skill can't do that — connectors are authored with the Ruby
+  **Workato Connector SDK** (`workato new/exec/push`). *Read this only when no connector
+  exists for the app, or you must edit a custom connector's internals; for recipes, stay here.*
+
+## Not for building connectors (different layer)
+
+This skill operates **recipes**; it cannot build or edit a **connector** — the adapter that
+defines how Workato talks to one app (connection, triggers, actions, schema). Connectors are
+authored with the **Workato Connector SDK** (a Ruby gem: `workato new/exec/push`), not the REST
+API, which has no connector-source surface. If a task needs a connector that doesn't exist yet,
+or a change *inside* a custom connector, see **references/connector-sdk.md**. If the connector
+already exists (Orderful, Shopify, Gmail, json_parser, …), it's recipe work — stay in this skill.
 
 ## Not the same as Workato's hosted MCP
 

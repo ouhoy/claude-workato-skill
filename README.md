@@ -20,6 +20,7 @@ recipe `code` JSON DSL, connector encodings, and the API gotchas that otherwise 
 | `references/recipe-gotchas.md` | The traps: verbatim-storage, `start`-as-validator, try/catch hiding failures, safely editing a live recipe, multi-tenant promotion |
 | `references/connectors-*.md` | Verified encodings for Gmail, Orderful↔Shopify, json_parser / lookup / logger |
 | `references/api-endpoints.md` | Endpoints, regions, rate limits, token scope |
+| `references/connector-sdk.md` | The boundary case — when a task needs a *connector* built/changed, point to the Ruby Connector SDK (this skill does recipes, not connectors) |
 | `evals/` | Eval prompts + a fixture for testing the skill |
 
 ## Install
