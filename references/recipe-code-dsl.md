@@ -8,7 +8,7 @@ recipe-gotchas.md (the API stores this verbatim and does NOT validate it).
 - Top-level shape · Step fields
 - Control flow — IF / ELSE_IF / ELSE (separate sibling steps); foreach / repeat / try-catch
 - Conditions + verified operand keys
-- Datapills — array-pill validation-vs-runtime; `=` formula mode; `.where()` filtering + null-safe guard; DB batch-insert `rows`/`____source`; extended schemas; formula conditions; `stop` step
+- Datapills — array-pill validation-vs-runtime; `=` formula mode (+ allowlisted-Ruby & converters); `.where()` filtering + null-safe guard; DB batch-insert `rows`/`____source`; extended schemas; formula conditions; `stop` step
 - Worked example — Gmail "Hello auto-responder"
 
 ## Top-level shape
@@ -173,6 +173,19 @@ Verified working inside `=` formulas: `[1]` integer indexing, `['key']` access, 
 `lookup('table_name', 'col': value)['col']` (see connectors-utilities.md).
 A Ruby chain inside `#{…}` instead gets rejected: *"not allowed in text mode. Please use
 formula mode for such expressions."* — that error means "make the whole value a `=` formula".
+
+### Formulas are an allowlist of Ruby — not arbitrary Ruby
+
+Workato formulas are a **curated allowlist of Ruby methods**, not the whole language — a method
+that exists in Ruby may still be rejected, so don't assume one is available. When unsure, the
+`start`-as-validator probe loop (recipe-gotchas.md) settles it. Verified-safe and commonly useful:
+
+- **Guards/presence:** `.present?`, `.blank?`, `.presence` (the nil-guarding above).
+- **String:** `.strip`, `.upcase`/`.downcase`, `.capitalize`/`.titleize`, `.gsub`/`.sub`,
+  `.split`/`.join`, `.ljust`/`.rjust` (pad fixed-width EDI codes), `.to_i`/`.to_f`/`.to_s`.
+- **Workato-specific converters you wouldn't guess** (handy for address/locale mapping):
+  `.to_state_code`/`.to_state_name`, `.to_country_alpha2`/`.to_country_alpha3`/`.to_country_name`,
+  `.to_currency`/`.to_currency_code`, `.to_phone`, `.ordinalize`, `.parameterize`.
 
 ### List `.where(field: 'value')` filtering — and the nil-crash it causes
 

@@ -69,9 +69,10 @@ ran, list jobs then dump a job. This is read-only and safe.
 ### Build a recipe
 1. Pick a **non-root** folder (`wk.py folders`) and the **connection id** (`wk.py connections`).
 2. Write the `code` tree (trigger = step 0; children in `block`) and a `config` array. Follow
-   **references/recipe-code-dsl.md** for step structure, IF/ELSE_IF/ELSE (separate sibling
-   steps), the verified condition operand table, and datapill encoding. Get connector field
-   names from **references/connectors-gmail.md** (or a real job for other connectors).
+   **references/recipe-code-dsl.md** for step structure, control flow (IF/ELSE_IF/ELSE as
+   sibling steps, `foreach`/`repeat` loops, `try`/`catch`), the verified condition operand
+   table, and datapill encoding. Get connector field names from **references/connectors-gmail.md**
+   (or a real job for other connectors).
 3. `wk.py create …` (leaves it **stopped**). Read it back: `wk.py recipe <id> --code`.
 4. **Verify** before declaring success (golden rule #1): have the user open it in the editor, or
    inspect a job once it runs. Then `wk.py start <id>` when ready.
@@ -82,6 +83,8 @@ ran, list jobs then dump a job. This is read-only and safe.
 **references/recipe-gotchas.md**): an invalid operand key (`doesnt_contain` → must be
 `not_contains`; full table in the DSL ref), a datapill pointing at a non-existent field
 (e.g. `from` instead of `from_email`), or `folder_id`/`code` body-type mistakes on create.
+**A fix isn't done at the `update` 200** (golden rule #1): re-read the code, then re-validate
+with `wk.py start` and/or one real job before declaring it fixed.
 
 ### Trigger timing
 Most triggers (Gmail `new_email` included) are **polling**, not real-time; the interval is
@@ -90,8 +93,9 @@ push (Gmail → Pub/Sub). Details in recipe-gotchas.md.
 
 ## When to read which reference
 
-- **references/recipe-code-dsl.md** — building/fixing recipe `code`: step keywords, IF/ELSE,
-  the verified operand table, datapill formats (incl. the **array-pill validation-vs-runtime
+- **references/recipe-code-dsl.md** — building/fixing recipe `code`: step keywords, control
+  flow (IF/ELSE, `foreach`/`repeat` loops, `try`/`catch`), the verified operand table, datapill
+  formats (incl. the **array-pill validation-vs-runtime
   table**, **`=` formula mode** for non-first elements/ternaries/`lookup()`, list
   **`.where(field:'val')` filtering + the backward-compatible null-safe guard** for the
   `[0]['x']`-on-nil crash, the **DB batch-insert `rows`/`____source` shape**, the
@@ -126,15 +130,6 @@ push (Gmail → Pub/Sub). Details in recipe-gotchas.md.
   changed (not a recipe). This skill can't do that — connectors are authored with the Ruby
   **Workato Connector SDK** (`workato new/exec/push`). *Read this only when no connector
   exists for the app, or you must edit a custom connector's internals; for recipes, stay here.*
-
-## Not for building connectors (different layer)
-
-This skill operates **recipes**; it cannot build or edit a **connector** — the adapter that
-defines how Workato talks to one app (connection, triggers, actions, schema). Connectors are
-authored with the **Workato Connector SDK** (a Ruby gem: `workato new/exec/push`), not the REST
-API, which has no connector-source surface. If a task needs a connector that doesn't exist yet,
-or a change *inside* a custom connector, see **references/connector-sdk.md**. If the connector
-already exists (Orderful, Shopify, Gmail, json_parser, …), it's recipe work — stay in this skill.
 
 ## Not the same as Workato's hosted MCP
 

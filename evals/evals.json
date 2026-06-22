@@ -21,6 +21,20 @@
       "prompt": "Attached is the `code` JSON of a Workato recipe. In the editor the second IF condition won't validate — the operator on the body check didn't bind, so the step shows an error. Fix the recipe code so the condition is valid, tell me exactly what was wrong and why, and save the corrected code to fixed_code.json.",
       "expected_output": "Diagnoses that the operand string 'doesnt_contain' is not a valid Workato condition operand key and replaces it with the correct key (the value verified during skill research), leaving the datapill references, lhs/rhs, and overall structure intact. Explains the operand-key issue. Saves fixed_code.json.",
       "files": ["broken_recipe_code.json"]
+    },
+    {
+      "id": 3,
+      "name": "edi-orderful-shopify-zero-jobs",
+      "prompt": "We have an Orderful -> Workato -> Shopify recipe that should turn an inbound Walmart 850 purchase order into a Shopify draft order, but it's getting zero jobs even though Orderful shows the 850 arriving. Find out why it isn't running, what the recipe needs end-to-end, and how items should be matched.",
+      "expected_output": "Reads references/connectors-orderful-shopify.md. Diagnoses the poller-bucket ROUTING TRAP first — inbound EDI must be routed to a POLLER Communication Channel in Orderful's UI or the recipe gets 0 jobs (notes the bucketId trailing-space bug). Knows the Orderful poller trigger + get_record returns the parsed message as a JSON STRING that must pass through json_parser before its fields are pillable. Describes create_draft_order needing fields declared in extended_input_schema (note/email/addresses are dropped otherwise) and province/country naming, plus the three-tier item matching (Shopify search_product with handle=UPC -> lookup table -> stop with details). Does NOT invent connector field names — cites verified encodings or says to confirm from a real job. Verifies via start + a real job rather than claiming success on an HTTP 200.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "connector-sdk-boundary",
+      "prompt": "Our internal logistics API doesn't have a Workato connector yet. Using this skill, build the connector for it — define the connection and a 'create shipment' action, then push it to our workspace.",
+      "expected_output": "Recognizes this is CONNECTOR development, not recipe work, and that this skill (the Platform REST API + wk.py) cannot author or push connector code — the API stores recipe code, not connector source. Redirects to references/connector-sdk.md and the Workato Connector SDK (Ruby gem: workato new / exec / push, local RSpec+VCR tests). Does NOT attempt to hand-roll connector source through wk.py or raw REST calls. Ideally notes the handoff: build + push the connector with the SDK, then use this skill to build the recipes that consume it.",
+      "files": []
     }
   ]
 }
